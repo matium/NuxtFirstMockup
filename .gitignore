@@ -141,7 +141,7 @@ web-apps/.nuxt
 web-apps/dist
 
 # vuepress build output
-web-apps.vuepress/dist
+web-apps/.vuepress/dist
 
 # Serverless directories
 .serverless
