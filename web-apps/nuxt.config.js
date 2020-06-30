@@ -37,6 +37,7 @@ export default {
   ** https://nuxtjs.org/guide/plugins
   */
   plugins: [
+    { src: '~/plugins/vue-dat-gui.ts', mode: 'client' }
   ],
   /*
   ** Auto import components
@@ -89,5 +90,14 @@ export default {
   ** See https://nuxtjs.org/api/configuration-build/
   */
   build: {
+    babel: {
+      presets({ isServer }) {
+        return [
+          [
+            "@nuxt/babel-preset-app", { loose: true }
+          ]
+        ]
+      }
+    }
   }
 }
