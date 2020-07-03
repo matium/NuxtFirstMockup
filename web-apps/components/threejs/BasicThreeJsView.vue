@@ -13,8 +13,65 @@
 import { Component, Vue } from "nuxt-property-decorator";
 import * as THREE from "three";
 import Stats from "three/examples/jsm/libs/stats.module";
+import { gsap } from "gsap";
 
-@Component
+@Component({
+  layout: 'ThreejsLayout',
+  transition: {
+    name: 'threejs-contents',
+    css: false,
+    mode: 'out-in',
+    beforeEnter(el: HTMLElement): void {
+      console.log('Contents Before Enter');
+      el.style.opacity = '0';
+    },
+    enter(el: HTMLElement, done: Function): void {
+      console.log('Contents Enter');
+      const $threejsOutput: HTMLDivElement = <HTMLDivElement> document.getElementById('threejs-output');
+      gsap.to(el, {
+        opacity: 1,
+        ease: 'expo.out',
+        duration: 0.3
+      });
+
+      gsap.to($threejsOutput, {
+        startAt: { y: -300 },
+        y: 0,
+        ease: 'expo.out',
+        delay: 0.1,
+        duration: 0.5,
+        onComplete: () => {
+          done();
+        }
+      });
+    },
+    afterEnter(el: HTMLElement): void {
+      console.log('Contents AfterEnter');
+      const $threejsOutput: HTMLDivElement = <HTMLDivElement> document.getElementById('threejs-output');
+      el.style.opacity = '1';
+      $threejsOutput.style.transform = null;
+    },
+    leave(el: HTMLElement, done: Function): void {
+      console.log('Contents Leave');
+      const $threejsOutput: HTMLDivElement = <HTMLDivElement> document.getElementById('threejs-output');
+      gsap.to($threejsOutput, {
+        opacity: 0,
+        y: -300,
+        ease: 'expo.out',
+        duration: 0.5
+      });
+
+      gsap.to(el, {
+        opacity: 0,
+        ease: 'expo.out',
+        duration: 0.5,
+        onComplete: () => {
+          done();
+        }
+      });
+    }
+  }
+})
 export default class BasicThreeJsView extends Vue {
   public $contents: HTMLDivElement;
 
@@ -38,6 +95,7 @@ export default class BasicThreeJsView extends Vue {
       this.$contents = <HTMLDivElement> threejsContents.$el;
       if (process.client) {
         this.initStats();
+        this.bindGuiWithControls();
         this.init();
         window.addEventListener('resize', this.onResize, false);
       }
@@ -163,11 +221,32 @@ export default class BasicThreeJsView extends Vue {
     this.stats.domElement.style.top = '0px';
     document.getElementById('stats-output').appendChild(this.stats.domElement);
   }
+
+  /**
+   * Override Methods: GUIパラメーターおよびメソッドの設定をする
+   */
+  protected bindGuiWithControls (): void {
+
+  }
 }
 </script>
 
 <style lang="scss">
 .three-js-contents {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+
+  #threejs-output {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
   .vue-dat-gui {
     position: absolute;
   }

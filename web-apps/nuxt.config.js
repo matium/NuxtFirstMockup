@@ -1,4 +1,4 @@
-import colors from 'vuetify/es5/util/colors'
+import colors from './node_modules/vuetify/es5/util/colors';
 
 export default {
   /*
@@ -37,7 +37,8 @@ export default {
   ** https://nuxtjs.org/guide/plugins
   */
   plugins: [
-    { src: '~/plugins/vue-dat-gui.ts', mode: 'client' }
+    { src: '~/plugins/vue-dat-gui.ts', mode: 'client' },
+    { src: '~/plugins/router-options.ts', mode: 'client' },
   ],
   /*
   ** Auto import components
@@ -90,12 +91,15 @@ export default {
   ** See https://nuxtjs.org/api/configuration-build/
   */
   build: {
+    transpile: [
+      "gsap"
+    ],
     babel: {
       presets({ isServer }) {
         return [
           [
-            "@nuxt/babel-preset-app", { loose: true }
-          ]
+            "@nuxt/babel-preset-app", { loose: true },
+          ],
         ]
       }
     }

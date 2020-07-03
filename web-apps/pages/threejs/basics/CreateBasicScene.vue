@@ -6,20 +6,22 @@
 >
   <div id="threejs-output"></div>
   <div id="stats-output"></div>
-  <dat-gui
-    closeText="Close controls"
-    openText="Open controls"
-    closePosition="bottom"
-    ref="datGui"
-  >
-    <dat-number v-model="controls.rotationSpeed" :min="0" :max="0.5" :step="0.01" label="RotationSpeed" />
-    <dat-button @click="addCube" label="Add Cube" />
-    <dat-button @click="removeCube" label="Remove Cube" />
-    <dat-button @click="outputObjects" label="Output Objects" />
-    <dat-number v-model="controls.numberOfObjects" label="Number Of Objects"/>
-    <dat-boolean v-model="controls.fog" @change="toggleFog" label="Fog" />
-    <dat-boolean v-model="controls.overrideMaterial" @change="toggleOverrideMaterial" label="OverrideMaterial" />
-  </dat-gui>
+  <client-only>
+    <dat-gui
+      closeText="Close controls"
+      openText="Open controls"
+      closePosition="bottom"
+      ref="datGui"
+    >
+      <dat-number v-model="controls.rotationSpeed" :min="0" :max="0.5" :step="0.01" label="RotationSpeed" />
+      <dat-button @click="addCube" label="Add Cube" />
+      <dat-button @click="removeCube" label="Remove Cube" />
+      <dat-button @click="outputObjects" label="Output Objects" />
+      <dat-number v-model="controls.numberOfObjects" label="Number Of Objects"/>
+      <dat-boolean v-model="controls.fog" @change="toggleFog" label="Fog" />
+      <dat-boolean v-model="controls.overrideMaterial" @change="toggleOverrideMaterial" label="OverrideMaterial" />
+    </dat-gui>
+  </client-only>
 </v-main>
 </template>
 
@@ -30,21 +32,19 @@ import { GUI } from "three/examples/jsm/libs/dat.gui.module";
 import Stats from "three/examples/jsm/libs/stats.module";
 import BasicThreeJsView from "~/components/threejs/BasicThreeJsView.vue";
 
-@Component({
-  layout: 'threejs'
-})
+@Component
 export default class CreateBasicScene extends BasicThreeJsView {
   private plane: THREE.Mesh;
   private planeWidth: number;
   private planeHeight: number;
 
-  private scene: THREE.Scene;
+  protected scene: THREE.Scene;
 
 
   // Override Controls
-  private step: number = 0;
+  protected step: number = 0;
   // Override Mixin
-  private controls: any = {
+  protected controls: any = {
     rotationSpeed: 0.1,
     numberOfObjects: 0,
     fog: false,
@@ -56,7 +56,7 @@ export default class CreateBasicScene extends BasicThreeJsView {
     console.log('Child Constructor');
   }
 
-  private createMesh (): void {
+  protected createMesh (): void {
     const planeGeometry = new THREE.PlaneGeometry(60, 40, 1, 1);
     const planeMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff });
     this.plane = new THREE.Mesh(planeGeometry, planeMaterial);
@@ -73,7 +73,7 @@ export default class CreateBasicScene extends BasicThreeJsView {
   }
 
 
-  private setLights (): void {
+  protected setLights (): void {
     const ambientLight = new THREE.AmbientLight(0x0c0c0c);
     this.scene.add(ambientLight);
 
@@ -84,7 +84,7 @@ export default class CreateBasicScene extends BasicThreeJsView {
   }
 
 
-  private updateAction (): void {
+  protected updateAction (): void {
     this.scene.traverse((obj) => {
       if (obj instanceof THREE.Mesh && obj != this.plane) {
         obj.rotation.x += this.controls.rotationSpeed;

@@ -24,7 +24,7 @@ import * as THREE from "three";
 import Stats from "three/examples/jsm/libs/stats.module";
 
 @Component({
-  layout: 'threejs'
+  layout: 'ThreejsLayout'
 })
 export default class FirstThreejsSample extends Vue {
   public $contents: HTMLDivElement;
