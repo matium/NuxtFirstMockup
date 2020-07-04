@@ -1,19 +1,8 @@
 <template>
 <v-app dark>
-  <v-app-bar
-    app
-    absolute
-  >
-    <v-btn
-      icon
-    >
-      <v-icon>mdi-menu</v-icon>
-    </v-btn>
-    <v-toolbar-title class="app-bar-site-title">
-      <nuxt-link v-if="!indexpage" to="/threejs/" class="site-title-link">Three.js Research</nuxt-link>
-      <div v-if="indexpage">Three.js Research</div>
-    </v-toolbar-title>
-  </v-app-bar>
+  <app-header-threejs
+    :is-index="indexpage"
+  ></app-header-threejs>
   <div class="view-contents-wrapper">
     <nuxt />
   </div>
@@ -22,8 +11,10 @@
 
 <script lang="ts">
 import { Component, Vue } from "nuxt-property-decorator";
+import AppHeaderThreejs from "~/components/threejs/AppHeaderThreejs.vue";
 
 @Component({
+  components: {AppHeaderThreejs},
   fetch(ctx) {
     console.log('Fetch: ', ctx);
   }
@@ -54,20 +45,6 @@ export default class ThreejsLayout extends Vue {
 </script>
 
 <style lang="scss">
-.app-bar-site-title {
-  font-weight: 200;
-  font-size: 1rem;
-
-  .site-title-link {
-    color: rgba(255, 255, 255, 1.0);
-    text-decoration: none;
-
-    &:hover {
-      color: rgba(255, 255, 255, 0.5);
-    }
-  }
-}
-
 .view-contents-wrapper {
   position: relative;
   width: 100%;
