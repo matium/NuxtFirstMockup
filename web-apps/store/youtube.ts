@@ -1,6 +1,7 @@
 import { Module, VuexModule, Mutation, Action } from "vuex-module-decorators";
 import { $axios } from "~/utils/api";
 import { YouTubeVideoProps } from "~/interfaces/VideoProps";
+import { APIKeys } from "~/credentials/api-keys";
 
 @Module({
   name: 'youtube',
@@ -26,7 +27,7 @@ export default class YouTube extends VuexModule {
     try {
       const methodUrl = 'https://www.googleapis.com/youtube/v3/playlistItems';
       const playlist_id = 'PLuFk1iO9RvJU6E1TDxHvvVrc_uHpVmklS';
-      const api_key = 'AIzaSyCw8pjE27Qx2DvuuE81GBtUlkovsrkgUFw';
+      const api_key = APIKeys.YOUTUBE_API_KEY;
       const ytData: any = await $axios.get(methodUrl, {
         params: {
           part: 'snippet',

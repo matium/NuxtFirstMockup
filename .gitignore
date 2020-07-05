@@ -142,6 +142,7 @@ web-apps/dist
 
 # vuepress build output
 web-apps/.vuepress/dist
+*/credentials
 
 # Serverless directories
 .serverless
