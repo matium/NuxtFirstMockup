@@ -35,6 +35,10 @@ import { gsap } from "gsap";
 
 @Component({
   layout: 'ThreejsLayout',
+  head: {
+    titleTemplate: '',
+    title: 'Three.js Research'
+  },
   transition: {
     name: 'test',
     css: false,
@@ -82,27 +86,27 @@ export default class ThreejsIndex extends Vue {
     {
       title: 'First Three.js Sample',
       outline: 'はじめてのThree.jsアプリケーションサンプル<br />シーンの作成とシーンオブジェクトの作成と配置 ｜ Statsとdat.GUIの配置',
-      to: 'basics/FirstThreejsSample'
+      to: '/threejs/basics/FirstThreejsSample'
     },
     {
       title: 'Create Basic Scene',
       outline: 'シーンの基本要素',
-      to: 'basics/CreateBasicScene'
+      to: '/threejs/basics/CreateBasicScene'
     },
     {
       title: 'Create Custom Geometry',
       outline: 'カスタマイズされたオリジナルジオメトリを作成',
-      to: 'basics/CreateCustomGeometry'
+      to: '/threejs/basics/CreateCustomGeometry'
     },
     {
       title: 'Mesh Properties',
       outline: 'Meshオブジェクトが持つプロパティを操作する',
-      to: 'basics/MeshProperties'
+      to: '/threejs/basics/MeshProperties'
     },
     {
       title: 'Moving Camera',
       outline: 'PerspectiveCameraをVelocity.jsを使ってアニメーション移動させる',
-      to: 'basics/MovingCamera'
+      to: '/threejs/basics/MovingCamera'
     },
   ];
 

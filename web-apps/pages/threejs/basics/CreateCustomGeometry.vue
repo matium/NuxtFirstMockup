@@ -30,7 +30,11 @@ import { SceneUtils } from "~/node_modules/three/examples/jsm/utils/SceneUtils";
 import BasicThreeJsView from "~/components/threejs/BasicThreeJsView.vue";
 
 
-@Component
+@Component({
+  head: {
+    title: 'Create Custom Geometry'
+  }
+})
 export default class CreateCustomGeometry extends BasicThreeJsView {
   private plane: THREE.Mesh;
   private customGeometryMesh: THREE.Group;

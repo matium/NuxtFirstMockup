@@ -32,7 +32,11 @@ import { GUI } from "three/examples/jsm/libs/dat.gui.module";
 import Stats from "three/examples/jsm/libs/stats.module";
 import BasicThreeJsView from "~/components/threejs/BasicThreeJsView.vue";
 
-@Component
+@Component({
+  head: {
+    title: 'Create Basic Scene'
+  }
+})
 export default class CreateBasicScene extends BasicThreeJsView {
   private plane: THREE.Mesh;
   private planeWidth: number;

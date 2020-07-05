@@ -1,5 +1,5 @@
 <template>
-<v-app dark>
+<v-app>
   <app-header-threejs
     :is-index="indexpage"
   ></app-header-threejs>
@@ -14,9 +14,11 @@ import { Component, Vue } from "nuxt-property-decorator";
 import AppHeaderThreejs from "~/components/threejs/AppHeaderThreejs.vue";
 
 @Component({
-  components: {AppHeaderThreejs},
-  fetch(ctx) {
-    console.log('Fetch: ', ctx);
+  components: {
+    AppHeaderThreejs
+  },
+  head: {
+    titleTemplate: '%s | Three.js Research'
   }
 })
 export default class ThreejsLayout extends Vue {

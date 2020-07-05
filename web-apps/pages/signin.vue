@@ -40,15 +40,24 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 
-@Component
+@Component({
+  head: {
+    title: 'Sign In'
+  }
+})
 export default class Signin extends Vue {
   private email: string = '';
   private password: string = '';
 
   private onSubmit (ev: MouseEvent): void {
-    console.log('Submit ===');
-    console.log('Email: ' + this.email);
-    console.log('Password: ' + this.password);
+    this.$store.dispatch('auth/signIn', { email: this.email, password: this.password })
+    .then((result) => {
+      console.log('Success: ', result);
+      this.$nuxt.$router.push('/');
+    })
+    .catch((err) => {
+      console.log('Failure: ', err);
+    });
   }
 }
 </script>
