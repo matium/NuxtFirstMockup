@@ -45,7 +45,11 @@ import { Component, Vue } from "vue-property-decorator";
 import * as THREE from "three";
 import BasicThreeJsView from "~/components/threejs/BasicThreeJsView.vue";
 
-@Component
+@Component({
+  head: {
+    title: 'Mesh Properties'
+  }
+})
 export default class MeshProperties extends BasicThreeJsView {
   private plane: THREE.Mesh;
   private cube: THREE.Mesh;

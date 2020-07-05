@@ -29,7 +29,11 @@ import BasicThreeJsView from "~/components/threejs/BasicThreeJsView.vue";
 import { CameraPositionProps } from "~/interfaces/CameraPositionProps";
 import { gsap } from 'gsap';
 
-@Component
+@Component({
+  head: {
+    title: 'Moving Camera'
+  }
+})
 export default class MovingCamera extends BasicThreeJsView {
   protected camera: THREE.PerspectiveCamera;
   private plane: THREE.Mesh;

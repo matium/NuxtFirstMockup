@@ -16,8 +16,8 @@ export default {
   ** See https://nuxtjs.org/api/configuration-head
   */
   head: {
-    titleTemplate: '%s - ' + process.env.npm_package_name,
-    title: process.env.npm_package_name || '',
+    titleTemplate: '%s | NuxtFirstMockup',
+    title: 'NuxtFirstMockup',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -39,6 +39,8 @@ export default {
   plugins: [
     { src: '~/plugins/vue-dat-gui.ts', mode: 'client' },
     { src: '~/plugins/router-options.ts', mode: 'client' },
+    { src: '~/plugins/axios-accessor.ts' },
+    { src: '~/plugins/firebase.ts' },
   ],
   /*
   ** Auto import components

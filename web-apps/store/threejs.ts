@@ -9,7 +9,7 @@ export default class Threejs extends VuexModule {
   isIndex: boolean = false;
 
   @Mutation
-  indexpage(value: boolean) {
+  indexpage (value: boolean) {
     this.isIndex = value;
   }
 }
