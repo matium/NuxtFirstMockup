@@ -3,7 +3,6 @@
   app
   class="app-header-youtube"
   id="AppHeaderYoutube"
-  color="primary"
   absolute
   dark
 >

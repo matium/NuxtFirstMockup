@@ -45,7 +45,9 @@ export default class YouTube extends VuexModule {
           const video: YouTubeVideoProps = {
             videoId: item.snippet.resourceId.videoId,
             title: item.snippet.title,
-            thumbnail: item.snippet.thumbnails.high
+            thumbnail: item.snippet.thumbnails.high,
+            publishedAt: item.snippet.publishedAt,
+            description: item.snippet.description
           };
           videoDataList.push(video);
         });

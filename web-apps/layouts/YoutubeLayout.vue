@@ -1,11 +1,9 @@
 <template>
-<v-app
-  light
->
+<v-app>
   <app-header-youtube
     :is-index="indexpage"
   ></app-header-youtube>
-  <div class="view-contents-wrapper">
+  <div class="youtube-view-contents-wrapper">
     <nuxt />
   </div>
 </v-app>
@@ -24,19 +22,15 @@ import AppHeaderYoutube from "~/components/youtube/AppHeaderYoutube.vue";
   }
 })
 export default class YoutubeLayout extends Vue {
-
   get indexpage (): boolean {
     return this.$store.state.youtube.isIndex;
-  }
-
-  created (): void {
-    this.$vuetify.theme.dark = false;
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.view-contents-wrapper {
-  background-color: #fff;
+.youtube-view-contents-wrapper {
+  position: relative;
+  width: 100%;
 }
 </style>
