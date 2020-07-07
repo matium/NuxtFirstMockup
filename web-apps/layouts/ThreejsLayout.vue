@@ -3,7 +3,7 @@
   <app-header-threejs
     :is-index="indexpage"
   ></app-header-threejs>
-  <div class="view-contents-wrapper">
+  <div class="threejs-view-contents-wrapper">
     <nuxt />
   </div>
 </v-app>
@@ -47,7 +47,7 @@ export default class ThreejsLayout extends Vue {
 </script>
 
 <style lang="scss">
-.view-contents-wrapper {
+.threejs-view-contents-wrapper {
   position: relative;
   width: 100%;
   height: 100vh;
