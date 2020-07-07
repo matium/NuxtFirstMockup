@@ -2,8 +2,8 @@
 <v-layout>
   <v-main class="youtube-index-page" id="YoutubeIndex">
     <v-container>
-      <div class="title-header d-flex justify-center pt-5" ref="titleHeader">
-        <h1 class="site-title title-1">YouTube Viewer</h1>
+      <div class="title-header d-flex justify-center pt-10" ref="titleHeader">
+        <h1 class="site-title">YouTube Viewer</h1>
       </div>
     </v-container>
     <v-container class="video-link-list pb-10">
@@ -14,6 +14,7 @@
         <v-col
           cols="12"
           md="6"
+          xl="4"
           v-for="(item, index) in playlist"
           class="px-1 py-2"
           :key="item.id"
@@ -59,8 +60,8 @@ export default class YoutubeIndex extends Vue {
   protected playlist: YouTubeVideoProps[] = [];
 
   mounted (): void {
+    // ToDo asyncDataでの反映に切り替える
     this.$nextTick(() => {
-      // ToDo YouTube APIを使ってデータを読み込む
       this.$store.dispatch('youtube/getYouTubePlaylist')
         .then((result) => {
           this.playlist = result;
@@ -75,6 +76,15 @@ export default class YoutubeIndex extends Vue {
 
 <style lang="scss" scoped>
 .youtube-index-page {
+
+  .title-header {
+    .site-title {
+      font-size: 2rem;
+      font-weight: 300;
+      color: rgba(255, 255, 255, 0.7);
+    }
+  }
+
   .video-link-list {
     .video-link-card {
       .video-title {

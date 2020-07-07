@@ -38,6 +38,7 @@ export default {
   */
   plugins: [
     { src: '~/plugins/vue-dat-gui.ts', mode: 'client' },
+    { src: '~/plugins/vue-youtube.ts', mode: 'client' },
     { src: '~/plugins/router-options.ts', mode: 'client' },
     { src: '~/plugins/axios-accessor.ts' },
     { src: '~/plugins/firebase.ts' },

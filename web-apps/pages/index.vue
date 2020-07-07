@@ -30,7 +30,7 @@
           hover
         >
           <v-img
-            src=""
+            src="images/contents-link-thumb02.jpg"
             alt="YouTube Viewer"
             width="100%"
             height="200px"
@@ -65,8 +65,6 @@ export default class Index extends Vue {
 
   .contents-link-list {
     margin: 0 auto 0 auto;
-
-
   }
 }
 </style>
