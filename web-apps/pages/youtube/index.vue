@@ -47,10 +47,50 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import {YouTubeVideoProps} from "~/interfaces/VideoProps";
+import { YouTubeVideoProps } from "~/interfaces/VideoProps";
+import { APIKeys } from "~/credentials/api-keys";
 
 @Component({
   layout: 'YoutubeLayout',
+  async asyncData ({ app, params, error }) {
+    // YouTubeのプレイリストを読み込む
+    const methodUrl = 'https://www.googleapis.com/youtube/v3/playlistItems';
+    const playlist_id = 'PLuFk1iO9RvJU6E1TDxHvvVrc_uHpVmklS';
+    return app.$axios.get(methodUrl, {
+      params: {
+        part: 'snippet',
+        playlistId: playlist_id,
+        maxResults: 50,
+        key: APIKeys.YOUTUBE_API_KEY
+      }
+    })
+      .then((result) => {
+        const responseItems: any[] = result.data.items;
+        console.log(responseItems);
+        if (responseItems.length > 0) {
+          const list: YouTubeVideoProps[] = [];
+          responseItems.forEach((item) => {
+            const video: YouTubeVideoProps = {
+              videoId: item.snippet.resourceId.videoId,
+              title: item.snippet.title,
+              thumbnail: item.snippet.thumbnails.high,
+              publishedAt: item.snippet.publishedAt,
+              description: item.snippet.description
+            };
+            list.push(video);
+          });
+
+          return { playlist: list };
+        }
+        else {
+          error({ statusCode: 404, message: 'ページが見つかりません' });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        error({ statusCode: 500, message: 'ページデータを読み込めませんでした' });
+      });
+  },
   head: {
     titleTemplate: '',
     title: 'YouTube Research'
@@ -58,19 +98,6 @@ import {YouTubeVideoProps} from "~/interfaces/VideoProps";
 })
 export default class YoutubeIndex extends Vue {
   protected playlist: YouTubeVideoProps[] = [];
-
-  mounted (): void {
-    // ToDo asyncDataでの反映に切り替える
-    this.$nextTick(() => {
-      this.$store.dispatch('youtube/getYouTubePlaylist')
-        .then((result) => {
-          this.playlist = result;
-        })
-        .catch((error) => {
-          console.log('Failure Load Playlist: ', error);
-        });
-    });
-  }
 }
 </script>
 

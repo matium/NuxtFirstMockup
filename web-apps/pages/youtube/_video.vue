@@ -3,24 +3,33 @@
   <v-main class="youtube-video-page" id="YoutubeVideoPage">
     <v-container class="youtube-video-contents">
       <client-only>
-        <div v-if="isVideoDataLoaded" class="video-player-frame">
-          <div class="player-box">
-            <youtube
-              :video-id="videoId"
-              :player-vars="playerVars"
-              width="100%"
-              height="100%"
-              ref="youtube"
-            ></youtube>
-          </div>
+        <div class="video-player-frame">
+          <transition
+            @before-enter="beforeEnterVideo"
+            @enter="enterVideo"
+          >
+            <div v-show="isVideoDataLoaded" class="player-box">
+              <youtube
+                :video-id="videoId"
+                :player-vars="playerVars"
+                width="100%"
+                height="100%"
+                ref="youtube"
+                @ready="onPlayerReady"
+                @cued="onPlayerCued"
+              ></youtube>
+            </div>
+          </transition>
         </div>
       </client-only>
       <v-card
-        class="video-info-card mt-10 pa-6"
+        class="video-info-card mt-10 px-6 pb-6"
         width="100%"
         min-height="150px"
+        loader-height="4"
+        :loading="isLoading"
       >
-        <v-card-title class="video-title mb-2">{{videoTitle}}</v-card-title>
+        <v-card-title class="video-title pt-8 mb-2">{{videoTitle}}</v-card-title>
         <v-card-subtitle class="video-sub-info">
           {{videoCreatedBy}}<br />
           <span class="label mr-2">公開日</span>{{videoPublishedAt}}
@@ -38,6 +47,7 @@ import { Component, Vue } from "nuxt-property-decorator";
 import moment from "moment";
 import { APIKeys } from "~/credentials/api-keys";
 import axios from "~/.nuxt/axios";
+import gsap from "gsap";
 
 @Component({
   layout: 'YoutubeLayout',
@@ -91,6 +101,7 @@ export default class YouTubeVideo extends Vue {
   private videoCreatedBy: string;
   private videoViewCount: string;
   private isVideoDataLoaded = false;
+  private isLoading = false;
 
   private playerVars: any = {
     autoplay: 0,
@@ -98,66 +109,47 @@ export default class YouTubeVideo extends Vue {
   };
 
   get player (): any {
-    const yt: any = this.$refs.youtube;
+
+    const yt: any = this.$refs.youtube.player;
     return yt;
   }
 
   mounted (): void {
-    console.log('YouTube VideoPage Mounted');
     this.$nextTick(() => {
-      this.isVideoDataLoaded = true;
-      /*
-      this.getVideoData()
-        .then((result) => {
-          console.log(result);
-
-          this.videoId = result.id;
-          this.videoTitle = result.snippet.title;
-          this.videoDescription = result.snippet.description;
-          const publishedDate = moment(result.snippet.publishedAt);
-          this.videoPublishedAt = publishedDate.format('YYYY-MM-DD');
-          this.videoCreatedBy = result.snippet.channelTitle;
-          this.videoViewCount = result.statistics.viewCount;
-          this.isVideoDataLoaded = true;
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-       */
-    })
+      console.log(this.player);
+      this.isLoading = true;
+    });
   }
 
-  private async getVideoData (): Promise<any> {
-    // APIのコール先メソッド
-    const methodUrl = 'https://www.googleapis.com/youtube/v3/videos';
-    // videoIdを取得する
-    const videoId = this.$route.params.video;
-    // API_KEYを取得する
-    const apiKey = APIKeys.YOUTUBE_API_KEY;
-
-    try {
-      const resultData: any = await this.$axios.get(methodUrl, {
-        params: {
-          part: 'id,snippet,statistics',
-          id: videoId,
-          key: apiKey
-        }
-      });
-
-      if (resultData.data.items.length === 1) {
-        const videoData = resultData.data.items[0];
-        return Promise.resolve(videoData);
-      }
-      else {
-        const err: Error = new Error('Search Result is Multiple');
-        err.name = 'incompatible_search_result';
-        return Promise.reject(err);
-      }
-    }
-    catch (err) {
-      return Promise.reject(err);
-    }
+  beforeEnterVideo (el: HTMLElement): void {
+    console.log('Before Enter Video: ', el);
+    el.style.opacity = '0';
+    el.style.transform = ('translateY(200px)');
   }
+
+  enterVideo (el: HTMLElement, done: Function): void {
+    console.log('Enter Video: ', el);
+    gsap.to(el, {
+      y: '0',
+      opacity: 1,
+      ease: 'expo.out',
+      duration: 0.5,
+      onComplete: () => {
+        done();
+      }
+    });
+  }
+
+  private onPlayerReady (): void {
+    console.log('onPlayerReady');
+    this.isVideoDataLoaded = true;
+    this.isLoading = false;
+  }
+
+  private onPlayerCued (): void {
+    console.log('onPlayerCued');
+  }
+
 }
 </script>
 
