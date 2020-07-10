@@ -140,6 +140,12 @@ web-apps/.nuxt
 # Nuxt generate
 web-apps/dist
 
+# Express API generate
+api/dist
+
+# Express Config files
+api/src/configs
+
 # vuepress build output
 web-apps/.vuepress/dist
 */credentials
