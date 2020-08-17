@@ -14,6 +14,7 @@ export default async ({ app, store }) => {
           next();
         }
         else {
+          next();
           store.dispatch('auth/checkSignedIn')
             .then((result) => {
               console.log('Signed In Check: ', result);

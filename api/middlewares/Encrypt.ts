@@ -1,8 +1,6 @@
 import crypto from "crypto";
+import { EncryptSecret } from "../src/configs/encrypt-secret";
 
-const ENCRYPTION_PASS = 'QzrPk47treYqBFHaBbusq8gKnDWz5UfL';  // 32Byte
-const SALT = 'mwZdnWY4s92rfRMX';  // 16Byte
-const BUFFER_KEY = 'ApPhJ7CLsx2Rd3qA';  // 16Byte
 const ENCRYPT_METHOD = 'aes-256-cbc';
 const ENCODING = 'hex';
 
@@ -16,9 +14,9 @@ export default class Encrypt {
   static encrypt = async (message: string): Promise<any> => {
     try {
       // 鍵の生成
-      const key = crypto.scryptSync(ENCRYPTION_PASS, SALT, 32);
+      const key = crypto.scryptSync(EncryptSecret.ENCRYPTION_PASS, EncryptSecret.SALT, 32);
       // IVを生成
-      const iv = Buffer.from(BUFFER_KEY);
+      const iv = Buffer.from(EncryptSecret.BUFFER_KEY);
       // 暗号器を生成
       const cipher = crypto.createCipheriv(ENCRYPT_METHOD, key, iv);
       // 暗号化されたデータを作成
@@ -43,9 +41,9 @@ export default class Encrypt {
       // 暗号化された文字列をバッファに戻す
       const encryptedData = Buffer.from(encryptedString, ENCODING);
       // 鍵を生成
-      const key = crypto.scryptSync(ENCRYPTION_PASS, SALT, 32);
+      const key = crypto.scryptSync(EncryptSecret.ENCRYPTION_PASS, EncryptSecret.SALT, 32);
       // IVを生成
-      const iv = Buffer.from(BUFFER_KEY);
+      const iv = Buffer.from(EncryptSecret.BUFFER_KEY);
       // 復号器を生成
       const decipher = crypto.createDecipheriv(ENCRYPT_METHOD, key, iv);
       // 復元データを作成

@@ -1,8 +1,22 @@
 import { Module, VuexModule, Mutation, Action } from "vuex-module-decorators";
 import { User } from "~/interfaces/User";
 import { $axios } from "~/utils/api";
+import { cacheAdapterEnhancer } from "axios-extensions";
 import firebase from "~/plugins/firebase";
+import APIPaths from "~/utils/APIPaths";
 
+let storageData: any;
+if (process.client) {
+  // ローカルストレージにトークンがあるかどうかをチェック
+  storageData = JSON.parse(localStorage.getItem('nuxt-first-mockup'));
+  if (storageData) {
+    console.log('Storage: ', storageData);
+    $axios.defaults.headers['x-access-token'] = storageData.auth.token;
+  }
+  else {
+    console.log('Storage is None');
+  }
+}
 
 @Module({
   name: 'auth',
@@ -13,11 +27,14 @@ export default class Auth extends VuexModule {
   isSignedIn: boolean = false;
   isFirstUserCheck: boolean = false;
   user: User = null;
+  token: string = storageData ? storageData.auth.token : null;
 
   @Mutation
-  setSignInUser (userData: User) {
+  setSignInUser ({userData, token}) {
     this.isSignedIn = true;
     this.user = userData;
+    this.token = token;
+    $axios.defaults.headers['x-access-token'] = token;
   }
 
   @Mutation
@@ -32,6 +49,35 @@ export default class Auth extends VuexModule {
     this.isFirstUserCheck = true;
   }
 
+
+  @Action({ rawError: true })
+  createUser (payload: { username: string, email: string, password: string}) {
+    console.log('Create User =================> ');
+    console.log('UserName: ' + payload.username);
+    console.log('Email: ' + payload.email);
+    console.log('Password: ' + payload.password);
+
+    return new Promise((resolve, reject) => {
+      const api_url = APIPaths.API_SITE_URL + APIPaths.CREATE_USER;
+      $axios.setHeader('Cache-Control', 'no-cache');
+      $axios.setHeader('Access-Control-Allow-Headers', 'x-access-token');
+      $axios.post(api_url, {
+        username: payload.username,
+        email: payload.email,
+        password: payload.password
+      })
+        .then((response: any) => {
+          const data = response.data;
+          resolve(data);
+        })
+        .catch((error: any) => {
+          console.log(error.response);
+          reject(error.response.data);
+        });
+    });
+  }
+
+
   @Action({ rawError: true })
   signIn (payload: {email: string, password: string}) {
     console.log('Try SignIn ===');
@@ -39,24 +85,30 @@ export default class Auth extends VuexModule {
     console.log('Password: ' + payload.password);
 
     return new Promise((resolve, reject) => {
-      firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
-        .then((result) => {
-          console.log('OK Signed In.');
-          this.checkSignedIn()
-            .then((result) => {
-              resolve(result);
-            })
-            .catch((error) => {
-              console.log(error);
-              reject(error);
-            });
+      const api_url = APIPaths.API_SITE_URL + APIPaths.SIGN_IN_USER;
+      $axios.setHeader('Cache-Control', 'no-cache');
+      $axios.setHeader('Access-Control-Allow-Headers', 'x-access-token');
+      $axios.post(api_url, {
+        email: payload.email,
+        password: payload.password
+      })
+        .then((response: any) => {
+          const data: any = response.data;
+          const token: string = data.token;
+          const signInUser: User = {
+            uid: data.userInfo.uid,
+            username: data.userInfo.username,
+            thumbnail: data.userInfo.photoUrl
+          };
+          this.setSignInUser({
+            userData: signInUser,
+            token: token
+          });
+          resolve(signInUser);
         })
-        .catch((error) => {
-          // Handle Errors here.
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          console.log(errorCode + ':' + errorMessage);
-          reject(error);
+        .catch((error: any) => {
+          console.log(error.response);
+          reject(error.response.data);
         });
     });
   }
@@ -80,6 +132,8 @@ export default class Auth extends VuexModule {
   @Action({ rawError: true })
   checkSignedIn (): Promise<any> {
     return new Promise((resolve, reject) => {
+      // ToDo ログインチェックを認証トークンを用いたものに変更する
+
       firebase.auth().onAuthStateChanged((user) => {
         if (user) {
           // まだ初回のログインチェックを実施していなかった場合
@@ -115,7 +169,10 @@ export default class Auth extends VuexModule {
                 thumbnail: user_thumbnail
               };
 
-              this.setSignInUser(userData);
+              this.setSignInUser({
+                userData: userData,
+                token: ''
+              });
               resolve(userData);
             })
             .catch((error) => {

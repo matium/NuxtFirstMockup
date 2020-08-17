@@ -48,6 +48,7 @@ import moment from "moment";
 import { APIKeys } from "~/credentials/api-keys";
 import axios from "~/.nuxt/axios";
 import gsap from "gsap";
+import YouTube from "~/store/youtube";
 
 @Component({
   layout: 'YoutubeLayout',
@@ -109,9 +110,8 @@ export default class YouTubeVideo extends Vue {
   };
 
   get player (): any {
-
-    const yt: any = this.$refs.youtube.player;
-    return yt;
+    const yt: any = this.$refs.youtube;
+    return yt.player;
   }
 
   mounted (): void {

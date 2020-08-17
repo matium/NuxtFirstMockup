@@ -1,4 +1,4 @@
-import colors from './node_modules/vuetify/es5/util/colors';
+import colors from './node_modules/vuetify/lib/util/colors';
 
 export default {
   /*
@@ -40,6 +40,8 @@ export default {
     { src: '~/plugins/vue-dat-gui.ts', mode: 'client' },
     { src: '~/plugins/vue-youtube.ts', mode: 'client' },
     { src: '~/plugins/router-options.ts', mode: 'client' },
+    { src: '~/plugins/vuelidate.ts', mode: 'client' },
+    { src: '~/plugins/localStorage.ts', mode: 'client' },
     { src: '~/plugins/axios-accessor.ts' },
     { src: '~/plugins/firebase.ts' },
   ],
@@ -61,13 +63,25 @@ export default {
   modules: [
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
+    '@nuxtjs/proxy',
     '@nuxtjs/pwa',
   ],
   /*
   ** Axios module configuration
   ** See https://axios.nuxtjs.org/options
   */
-  axios: {},
+  axios: {
+    proxy: true
+  },
+  /*
+  ** Proxy module configuration
+  */
+  proxy: {
+    '/api/': {
+      target: 'http://localhost:3000',
+      pathRewrite: {'^/api/': ''},
+    }
+  },
   /*
   ** vuetify module configuration
   ** https://github.com/nuxt-community/vuetify-module

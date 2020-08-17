@@ -2,6 +2,8 @@ import express from "express";
 import mysql, {MysqlError} from "mysql";
 import { DBConfig } from "../configs/db-config";
 import { User, UserInfo } from "../interfaces/user-params";
+import jwt from "jsonwebtoken";
+import { JwtSecretKey } from "../configs/jwt-secret";
 import Encrypt from "../../middlewares/Encrypt";
 import bcrypt from "bcrypt";
 
@@ -16,6 +18,7 @@ const db = mysql.createConnection({
 });
 
 router.post('/create-user', (req, res) => {
+  
   const user: any = {
     username: req.body.username,
     email: req.body.email,
@@ -34,6 +37,48 @@ router.post('/create-user', (req, res) => {
       res.status(500).send(error);
     });
 });
+
+router.post('/signin', (req, res) => {
+  signInUser(req.body.email, req.body.password)
+    .then((result) => {
+      // 取得したユーザーIDからユーザー情報を取得する
+      getUserInfo(result.uid)
+        .then((result) => {
+          // トークンの有効期間
+          const expiresInTerm = '3h';
+          // トークンを作成
+          const payload: any = {
+            uid: result.uid,
+            username: result.username
+          };
+          const token: string = jwt.sign(payload, JwtSecretKey, {algorithm: "HS256", expiresIn: expiresInTerm});
+          
+          // ユーザーデータを作成する
+          const userInfo: UserInfo = {
+            id: result.id,
+            uid: result.uid,
+            username: result.username,
+            photoUrl: result.photo_url
+          };
+          
+          // ユーザーデータとトークンをレスポンス
+          res.send({
+            status: 'success',
+            message: 'Success Sign In User',
+            userInfo: userInfo,
+            token: token
+          });
+        })
+        .catch((error) => {
+          res.status(500).send(error);
+        });
+    })
+    .catch((error) => {
+      res.status(500).send(error);
+    });
+});
+
+// ToDo 認証トークンによる認証チェックを実装する
 
 
 /**
@@ -95,6 +140,33 @@ async function getNextUserId (): Promise<string> {
   });
 }
 
+
+async function getUserInfo (uid: string): Promise<any> {
+  return new Promise((resolve, reject) => {
+    db.query(
+      'SELECT * FROM user_info WHERE uid=?',
+      [uid],
+      (error, results, fields) => {
+        if (error) {
+          reject(error);
+        }
+        
+        console.log(results);
+        const userInfo: UserInfo = results[0];
+        if (userInfo) {
+          resolve(userInfo)
+        }
+        else {
+          const noUserError: Error = new Error('Not existed user info.');
+          noUserError.name = 'NoExistedError';
+          reject(noUserError);
+        }
+      }
+    );
+  });
+}
+
+
 async function registerNewUser ( newUser: User ): Promise<any> {
   return new Promise((resolve, reject) => {
     db.query('INSERT INTO users SET ?', newUser, (error, results, fields) => {
@@ -108,7 +180,6 @@ async function registerNewUser ( newUser: User ): Promise<any> {
 }
 
 async function setInitialUserInfo ( userInfo: UserInfo ): Promise<any> {
-  // ToDo ユーザー情報データの初期値を登録する
   return new Promise((resolve, reject) => {
     // 初期値はユーザー名のみを登録する
     db.query('INSERT INTO user_info SET ?', userInfo, (error, results, fields) => {
@@ -120,3 +191,48 @@ async function setInitialUserInfo ( userInfo: UserInfo ): Promise<any> {
     })
   });
 }
+
+
+async function signInUser (email: string, password: string): Promise<any> {
+  return new Promise(async (resolve, reject) => {
+    // まず該当のemailアドレスを持つユーザーがいるかどうか
+    // Emailアドレスを暗号化する
+    const encryptEmail: string = await Encrypt.encrypt(email);
+    console.log('Encrypt Email: ', encryptEmail);
+    // パスワードをハッシュ化する
+    const hashPassword: string = bcrypt.hashSync(password, 10);
+    console.log('Hash Password: ', hashPassword);
+    db.query(
+      'SELECT * FROM users WHERE email=?',
+      [encryptEmail],
+      (error, results, fields) => {
+        if (error) {
+          reject(error);
+          throw error;
+        }
+        const user: User = results[0];
+        // パスワードチェック
+        bcrypt.compare(password, user.password, (err, same) => {
+          // エラーが存在した場合
+          if (err) {
+            console.log('Password Error: ', err);
+            reject(err);
+          }
+          // パスワードの同一性エラー
+          if (!same) {
+            const incorrectError: Error = new Error('Incorrect password');
+            incorrectError.name = 'SignInFailed';
+            reject(incorrectError);
+          }
+          
+          // サインインユーザーのユーザーIDを返す
+          resolve({
+            id: user.id,
+            uid: user.uid
+          });
+        });
+      }
+    );
+  });
+}
+
