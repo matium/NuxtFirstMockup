@@ -21,7 +21,7 @@
     "moment": "^2.27.0",
     "nuxt": "^2.13.0",
     "nuxt-property-decorator": "^2.7.2",
-    "three": "^0.118.3",
+    "three": "^0.137.0",
     "vue-youtube": "^1.4.0"
   },
   "devDependencies": {
